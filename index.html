@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>倒數計時器</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="timer-shell">
+      <section class="timer-panel" aria-labelledby="page-title">
+        <p class="eyebrow">Focus Timer</p>
+        <h1 id="page-title">倒數計時器</h1>
+
+        <div class="time-display" aria-live="polite" aria-atomic="true">
+          <span id="minutes">05</span>
+          <span class="separator">:</span>
+          <span id="seconds">00</span>
+        </div>
+
+        <form class="time-form" id="time-form">
+          <label for="duration">設定分鐘數</label>
+          <div class="input-row">
+            <input id="duration" name="duration" type="number" min="1" max="999" value="5" inputmode="numeric">
+            <button type="submit">套用</button>
+          </div>
+        </form>
+
+        <div class="quick-times" aria-label="快速設定">
+          <button type="button" data-minutes="1">1 分鐘</button>
+          <button type="button" data-minutes="5">5 分鐘</button>
+          <button type="button" data-minutes="10">10 分鐘</button>
+          <button type="button" data-minutes="25">25 分鐘</button>
+        </div>
+
+        <div class="controls">
+          <button class="primary" id="start-pause" type="button">開始</button>
+          <button id="reset" type="button">重設</button>
+        </div>
+
+        <p class="status" id="status">準備好了。</p>
+      </section>
+    </main>
+
+    <audio id="alarm" preload="auto">
+      <source src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YTAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA" type="audio/wav">
+    </audio>
+    <script src="app.js"></script>
+  </body>
+</html>
