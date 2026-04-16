@@ -236,18 +236,18 @@
         </div>
 
         <form class="time-form" id="time-form">
-          <label for="duration">設定分鐘數</label>
+          <label for="duration">設定秒數</label>
           <div class="input-row">
-            <input id="duration" name="duration" type="number" min="1" max="999" value="5" inputmode="numeric">
+            <input id="duration" name="duration" type="number" min="1" max="359940" value="300" inputmode="numeric">
             <button type="submit">套用</button>
           </div>
         </form>
 
         <div class="quick-times" aria-label="快速設定">
-          <button type="button" data-minutes="1">1 分鐘</button>
-          <button type="button" data-minutes="5">5 分鐘</button>
-          <button type="button" data-minutes="10">10 分鐘</button>
-          <button type="button" data-minutes="25">25 分鐘</button>
+          <button type="button" data-seconds="10">10 秒</button>
+          <button type="button" data-seconds="30">30 秒</button>
+          <button type="button" data-seconds="60">60 秒</button>
+          <button type="button" data-seconds="300">300 秒</button>
         </div>
 
         <div class="controls">
@@ -270,9 +270,9 @@
       const startPauseBtn = document.querySelector("#start-pause");
       const resetBtn = document.querySelector("#reset");
       const statusEl = document.querySelector("#status");
-      const quickButtons = document.querySelectorAll("[data-minutes]");
+      const quickButtons = document.querySelectorAll("[data-seconds]");
       const panel = document.querySelector(".timer-panel");
-      const alarm = document.querySelector("#alarm");
+      let audioContext = null;
 
       let totalSeconds = 5 * 60;
       let remainingSeconds = totalSeconds;
@@ -302,15 +302,15 @@
         startPauseBtn.textContent = "開始";
       }
 
-      function setDuration(minutes) {
-        const safeMinutes = Math.min(Math.max(Number(minutes) || 1, 1), 999);
-        totalSeconds = safeMinutes * 60;
+      function setDuration(seconds) {
+        const safeSeconds = Math.min(Math.max(Number(seconds) || 1, 1), 359940);
+        totalSeconds = safeSeconds;
         remainingSeconds = totalSeconds;
-        durationInput.value = safeMinutes;
+        durationInput.value = safeSeconds;
         panel.classList.remove("finished");
         stopTimer();
         updateDisplay();
-        setStatus(`已設定 ${safeMinutes} 分鐘。`);
+        setStatus(`已設定 ${safeSeconds} 秒。`);
       }
 
       function finishTimer() {
@@ -321,9 +321,49 @@
         void panel.offsetWidth;
         panel.classList.add("finished");
         setStatus("時間到。");
-        alarm.currentTime = 0;
-        alarm.play().catch(() => {
-          setStatus("時間到。");
+        playAlarm();
+      }
+
+      function playTone(startTime, frequency, duration, volume) {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration + 0.04);
+      }
+
+      function playAlarm() {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContext) {
+          return;
+        }
+
+        audioContext = audioContext || new AudioContext();
+
+        audioContext.resume().then(() => {
+          const now = audioContext.currentTime;
+          const tones = [
+            [0, 880],
+            [0.42, 660],
+            [0.84, 880],
+            [1.26, 660],
+            [1.68, 988],
+            [2.1, 740],
+            [2.52, 988],
+          ];
+
+          tones.forEach(([offset, frequency]) => {
+            playTone(now + offset, frequency, 0.34, 0.18);
+          });
         });
       }
 
@@ -355,7 +395,7 @@
 
       quickButtons.forEach((button) => {
         button.addEventListener("click", () => {
-          setDuration(button.dataset.minutes);
+          setDuration(button.dataset.seconds);
         });
       });
 
