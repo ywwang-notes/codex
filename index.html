@@ -4,7 +4,224 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>倒數計時器</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1d2321;
+        --muted: #5f6a64;
+        --paper: rgba(255, 255, 255, 0.88);
+        --line: rgba(29, 35, 33, 0.16);
+        --accent: #d83f31;
+        --accent-dark: #a62d24;
+        --green: #1d7f62;
+        --gold: #f1c64b;
+        --shadow: 0 24px 70px rgba(17, 24, 20, 0.24);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", "Microsoft JhengHei", system-ui, sans-serif;
+        color: var(--ink);
+        background:
+          linear-gradient(rgba(252, 250, 244, 0.72), rgba(238, 246, 241, 0.78)),
+          url("https://images.unsplash.com/photo-1499728603263-13726abce5fd?auto=format&fit=crop&w=1800&q=80") center / cover fixed;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .timer-shell {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 32px 18px;
+      }
+
+      .timer-panel {
+        width: min(100%, 520px);
+        padding: 34px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--green);
+        font-size: 0.86rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0 0 24px;
+        font-size: clamp(2rem, 2.4rem, 2.4rem);
+        line-height: 1.1;
+      }
+
+      .time-display {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+        min-height: 132px;
+        margin-bottom: 24px;
+        padding: 20px;
+        border: 2px solid rgba(29, 127, 98, 0.28);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+      }
+
+      .time-display span {
+        display: block;
+        font-size: clamp(4rem, 4.8rem, 4.8rem);
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .time-display .separator {
+        color: var(--accent);
+      }
+
+      .time-form {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      label {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+      }
+
+      input {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 14px;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      button {
+        min-height: 48px;
+        border: 1px solid rgba(29, 35, 33, 0.18);
+        border-radius: 8px;
+        padding: 0 16px;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.9);
+        cursor: pointer;
+        transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(29, 127, 98, 0.45);
+      }
+
+      button:focus-visible,
+      input:focus-visible {
+        outline: 3px solid rgba(241, 198, 75, 0.8);
+        outline-offset: 2px;
+      }
+
+      .quick-times {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .quick-times button {
+        min-height: 42px;
+        padding: 0 8px;
+        font-size: 0.92rem;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .primary {
+        border-color: var(--accent);
+        color: #fff;
+        background: var(--accent);
+      }
+
+      .primary:hover {
+        border-color: var(--accent-dark);
+        background: var(--accent-dark);
+      }
+
+      .status {
+        min-height: 24px;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .timer-panel.finished {
+        animation: pulse 900ms ease-in-out 3;
+      }
+
+      @keyframes pulse {
+        50% {
+          border-color: var(--accent);
+          box-shadow: 0 24px 80px rgba(216, 63, 49, 0.36);
+        }
+      }
+
+      @media (max-width: 520px) {
+        .timer-shell {
+          align-items: stretch;
+          padding: 16px;
+        }
+
+        .timer-panel {
+          display: grid;
+          align-content: center;
+          padding: 24px;
+        }
+
+        .time-display {
+          min-height: 112px;
+          padding: 14px;
+        }
+
+        .time-display span {
+          font-size: clamp(3.1rem, 3.4rem, 3.4rem);
+        }
+
+        .quick-times {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
   </head>
   <body>
     <main class="timer-shell">
@@ -45,6 +262,122 @@
     <audio id="alarm" preload="auto">
       <source src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YTAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA" type="audio/wav">
     </audio>
-    <script src="app.js"></script>
+    <script>
+      const minutesEl = document.querySelector("#minutes");
+      const secondsEl = document.querySelector("#seconds");
+      const form = document.querySelector("#time-form");
+      const durationInput = document.querySelector("#duration");
+      const startPauseBtn = document.querySelector("#start-pause");
+      const resetBtn = document.querySelector("#reset");
+      const statusEl = document.querySelector("#status");
+      const quickButtons = document.querySelectorAll("[data-minutes]");
+      const panel = document.querySelector(".timer-panel");
+      const alarm = document.querySelector("#alarm");
+
+      let totalSeconds = 5 * 60;
+      let remainingSeconds = totalSeconds;
+      let timerId = null;
+      let isRunning = false;
+
+      function formatTime(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function updateDisplay() {
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        minutesEl.textContent = formatTime(minutes);
+        secondsEl.textContent = formatTime(seconds);
+        document.title = `${formatTime(minutes)}:${formatTime(seconds)} 倒數計時器`;
+      }
+
+      function setStatus(message) {
+        statusEl.textContent = message;
+      }
+
+      function stopTimer() {
+        window.clearInterval(timerId);
+        timerId = null;
+        isRunning = false;
+        startPauseBtn.textContent = "開始";
+      }
+
+      function setDuration(minutes) {
+        const safeMinutes = Math.min(Math.max(Number(minutes) || 1, 1), 999);
+        totalSeconds = safeMinutes * 60;
+        remainingSeconds = totalSeconds;
+        durationInput.value = safeMinutes;
+        panel.classList.remove("finished");
+        stopTimer();
+        updateDisplay();
+        setStatus(`已設定 ${safeMinutes} 分鐘。`);
+      }
+
+      function finishTimer() {
+        stopTimer();
+        remainingSeconds = 0;
+        updateDisplay();
+        panel.classList.remove("finished");
+        void panel.offsetWidth;
+        panel.classList.add("finished");
+        setStatus("時間到。");
+        alarm.currentTime = 0;
+        alarm.play().catch(() => {
+          setStatus("時間到。");
+        });
+      }
+
+      function tick() {
+        if (remainingSeconds <= 1) {
+          finishTimer();
+          return;
+        }
+
+        remainingSeconds -= 1;
+        updateDisplay();
+      }
+
+      function startTimer() {
+        if (remainingSeconds <= 0) {
+          remainingSeconds = totalSeconds;
+        }
+
+        isRunning = true;
+        startPauseBtn.textContent = "暫停";
+        setStatus("倒數中。");
+        timerId = window.setInterval(tick, 1000);
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        setDuration(durationInput.value);
+      });
+
+      quickButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          setDuration(button.dataset.minutes);
+        });
+      });
+
+      startPauseBtn.addEventListener("click", () => {
+        if (isRunning) {
+          stopTimer();
+          setStatus("已暫停。");
+          return;
+        }
+
+        startTimer();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        remainingSeconds = totalSeconds;
+        panel.classList.remove("finished");
+        stopTimer();
+        updateDisplay();
+        setStatus("已重設。");
+      });
+
+      updateDisplay();
+    </script>
   </body>
 </html>
