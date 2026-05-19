@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>114-2 前瞻資訊科技應用研究｜倒數計時器作業成果</title>
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --panel: #fffdf8;
+      --ink: #252525;
+      --muted: #68635d;
+      --line: #ded8ce;
+      --accent: #236a6f;
+      --accent-2: #a34c2e;
+      --accent-3: #5d6f2a;
+      --soft: #e8f1ef;
+      --warning: #fff2d8;
+      --shadow: 0 14px 36px rgba(55, 47, 38, .11);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .88);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand strong {
+      font-size: 17px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .button, button, select, input {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: 8px;
+      min-height: 38px;
+      font: inherit;
+    }
+
+    .button, button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 12px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .button.primary {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: white;
+    }
+
+    main {
+      padding: 34px 0 56px;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .intro h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .intro-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 250px;
+      padding: 6px 0;
+    }
+
+    .intro-copy p {
+      max-width: 780px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 88px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .brief {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brief h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .brief ol {
+      margin: 0;
+      padding-left: 1.3em;
+      color: var(--muted);
+    }
+
+    .brief li + li {
+      margin-top: 4px;
+    }
+
+    .assignment {
+      margin-bottom: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .assignment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      background: #f1ece3;
+    }
+
+    .assignment h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .assignment .subtitle {
+      color: var(--muted);
+      margin: 6px 0 0;
+    }
+
+    .assignment-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr);
+      gap: 0;
+    }
+
+    .assignment-block {
+      padding: 20px;
+      border-right: 1px solid var(--line);
+    }
+
+    .assignment-side {
+      padding: 20px;
+      background: #fbf8f1;
+    }
+
+    .assignment h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    .assignment ol, .assignment ul {
+      margin: 0;
+      padding-left: 1.25em;
+      color: var(--muted);
+    }
+
+    .assignment li + li {
+      margin-top: 8px;
+    }
+
+    .prompt-box {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #d6c7b0;
+      border-radius: 8px;
+      background: #fffaf0;
+      color: #3d352c;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .format-example {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: var(--soft);
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 180px 170px auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 18px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .gallery.list {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 360px;
+    }
+
+    .gallery.list .card {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+    }
+
+    .preview {
+      height: 210px;
+      background: #eee7dc;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gallery.list .preview {
+      height: 100%;
+      min-height: 230px;
+      border-bottom: 0;
+      border-right: 1px solid var(--line);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: white;
+    }
+
+    .empty-preview {
+      min-height: 210px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--warning);
+      font-weight: 700;
+    }
+
+    .card-body {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .student {
+      min-width: 0;
+    }
+
+    .student h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.28;
+    }
+
+    .student p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--soft);
+      color: var(--accent);
+      border: 1px solid #c5ddda;
+    }
+
+    .badge.issue {
+      background: var(--warning);
+      color: var(--accent-2);
+      border-color: #f0d5a0;
+    }
+
+    .url {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+      margin: 0;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .card-actions .button {
+      min-height: 34px;
+      font-size: 13px;
+      padding: 7px 10px;
+    }
+
+    .note {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 16px;
+    }
+
+    .note h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .note ul {
+      margin: 0;
+      padding-left: 1.2em;
+      color: var(--muted);
+    }
+
+    .note li + li {
+      margin-top: 6px;
+    }
+
+    .hidden { display: none !important; }
+
+    footer {
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding: 22px 0;
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .intro {
+        grid-template-columns: 1fr;
+      }
+
+      .assignment-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .assignment-block {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .wrap {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 12px 0;
+      }
+
+      .nav-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .assignment-head {
+        flex-direction: column;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toolbar, .gallery, .gallery.list {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery.list .card {
+        display: flex;
+      }
+
+      .gallery.list .preview {
+        height: 210px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div class="brand">
+        <strong>114-2 前瞻資訊科技應用研究</strong>
+        <span>作業二｜倒數計時器成果彙整</span>
+      </div>
+      <nav class="nav-actions" aria-label="相關連結">
+        <a class="button" href="https://yw-notes.notion.site/114-2-30fa7ad3a9ca8058865edc50eab7c804" target="_blank" rel="noreferrer">課程網站</a>
+        <a class="button" href="#assignment">作業說明</a>
+        <a class="button primary" href="#works">查看作品</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <div>
+          <h1 id="page-title">倒數計時器作業成果</h1>
+          <p>學生使用 Codex 製作倒數計時器，並將作品發布到自己的 GitHub Pages 或其他公開網址。這裡將可開啟作品集中展示，方便課堂分享、互評與檢核。</p>
+        </div>
+        <div class="stats" aria-label="繳交統計">
+          <div class="stat"><b id="totalCount">11</b><span>展示作品</span></div>
+          <div class="stat"><b id="liveCount">11</b><span>可公開瀏覽</span></div>
+          <div class="stat"><b>2</b><span>班級群組</span></div>
+          <div class="stat"><b>1</b><span>作業主題</span></div>
+        </div>
+      </div>
+      <aside class="brief">
+        <div>
+          <h2>作業說明摘錄</h2>
+          <ol>
+            <li>到 ChatGPT 點 Codex，依指示安裝到自己的電腦。</li>
+            <li>到 GitHub 建立帳號與新的 repository。</li>
+            <li>用 Codex 製作倒數計時器，推送並設定為網站。</li>
+          </ol>
+        </div>
+        <div class="card-actions">
+          <a class="button" href="https://ywwang-notes.github.io/codex/timer.html" target="_blank" rel="noreferrer">範例作品</a>
+          <a class="button" href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="wrap assignment" id="assignment" aria-labelledby="assignment-title">
+      <div class="assignment-head">
+        <div>
+          <h2 id="assignment-title">作業二：倒數計時器</h2>
+          <p class="subtitle">作業內容已整理為網頁文字，方便在 GitHub Pages 上直接閱讀。</p>
+        </div>
+      </div>
+      <div class="assignment-grid">
+        <div class="assignment-block">
+          <h3>任務流程</h3>
+          <ol>
+            <li>到 ChatGPT 點 Codex，依指示下載並安裝在自己的電腦。</li>
+            <li>到 GitHub，用 Google 帳號建立新帳號。</li>
+            <li>到 Codex，用自然語言做一個倒數計時器，並推送到 GitHub。</li>
+            <li>在 GitHub 手動建立新的 repository，從 repo 複製連結並貼到 Codex。</li>
+            <li>請 Codex 設定 GitHub Pages，讓作品顯示到網站上。</li>
+          </ol>
+          <div class="prompt-box">
+            請幫我寫一個網頁，裡面有倒數計時器，寫好展示給我看，讓我試用。<br>
+            請幫我推送到 GitHub。<br>
+            請幫我設定，讓它顯示到網站上。
+          </div>
+        </div>
+        <aside class="assignment-side">
+          <h3>完成標準</h3>
+          <ul>
+            <li>作品可以從公開網址開啟。</li>
+            <li>網址格式建議如下：</li>
+          </ul>
+          <span class="format-example">https://username.github.io/repo_name/</span>
+          <h3 style="margin-top:18px;">作業參考</h3>
+          <ul>
+            <li>範例：<a href="https://ywwang-notes.github.io/codex/timer.html" target="_blank" rel="noreferrer">https://ywwang-notes.github.io/codex/timer.html</a></li>
+            <li>最後修改：2026 年 04 月 17 日（五）18:51</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="wrap" id="works" aria-labelledby="works-title">
+      <div class="toolbar" style="grid-template-columns: 1fr auto;">
+        <h2 id="works-title" style="margin:0;font-size:20px;">學生作品</h2>
+        <div class="view-toggle" aria-label="切換檢視">
+          <button id="gridBtn" class="active" type="button" aria-pressed="true">格狀</button>
+          <button id="listBtn" type="button" aria-pressed="false">列表</button>
+        </div>
+      </div>
+      <div id="gallery" class="gallery" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">整理日期：2026-05-19。若學生重新發布作品，只要更新下方資料陣列中的網址即可。</div>
+  </footer>
+
+  <script>
+    const submissions = [
+      { title: "作品 01", url: "https://wenting.vercel.app", repo: "https://github.com/wenwenliu73/wenting", status: "live" },
+      { title: "作品 02", url: "https://kulung650105.github.io/countdown-timer/", status: "live" },
+      { title: "作品 03", url: "https://bdu8100cat-cyber.github.io/countdown/", status: "live" },
+      { title: "作品 04", url: "https://skyrain0514-max.github.io/lol/", status: "live" },
+      { title: "作品 05", url: "https://lily850810-a11y.github.io/lilycodex/", status: "live" },
+      { title: "作品 06", url: "https://bolawang.github.io/xz/", status: "live" },
+      { title: "作品 07", url: "https://t0983277957-cell.github.io/julie/countdown-demo.html", status: "live" },
+      { title: "作品 08", url: "https://n11470008.github.io/Countdown-Timer/", status: "live" },
+      { title: "作品 09", url: "https://pearl7077.github.io/clcok/", status: "live" },
+      { title: "作品 10", url: "https://vincentwu09-amen.github.io/countdown-timer/countdown.html", status: "live" },
+      { title: "作品 11", url: "https://dillian1216-coder.github.io/dillian/", status: "live" }
+    ];
+
+    const gallery = document.querySelector("#gallery");
+    const gridBtn = document.querySelector("#gridBtn");
+    const listBtn = document.querySelector("#listBtn");
+
+    function isPublicUrl(item) {
+      return item.status === "live" && /^https?:\/\//.test(item.url);
+    }
+
+    function card(item) {
+      const preview = isPublicUrl(item)
+        ? `<iframe loading="lazy" title="${item.title}倒數計時器預覽" src="${item.url}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`
+        : `<div class="empty-preview">${item.note || "未提供公開網址"}</div>`;
+
+      const repoButton = item.repo
+        ? `<a class="button" href="${item.repo}" target="_blank" rel="noreferrer">原始碼</a>`
+        : "";
+
+      const openButton = isPublicUrl(item)
+        ? `<a class="button primary" href="${item.url}" target="_blank" rel="noreferrer">開啟作品</a>`
+        : "";
+
+      const copyButton = item.url
+        ? `<button type="button" data-copy="${item.url}">複製網址</button>`
+        : "";
+
+      return `
+        <article class="card">
+          <div class="preview">${preview}</div>
+          <div class="card-body">
+            <div class="meta">
+              <div class="student">
+                <h3>${item.title}</h3>
+                <p>倒數計時器</p>
+              </div>
+              <span class="badge ${item.status === "issue" ? "issue" : ""}">${item.status === "live" ? "可瀏覽" : "待補"}</span>
+            </div>
+            <p class="url">${item.url || item.note}</p>
+            <div class="card-actions">${openButton}${repoButton}${copyButton}</div>
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      gallery.innerHTML = submissions.map(card).join("");
+    }
+
+    function setView(view) {
+      const list = view === "list";
+      gallery.classList.toggle("list", list);
+      gridBtn.classList.toggle("active", !list);
+      listBtn.classList.toggle("active", list);
+      gridBtn.setAttribute("aria-pressed", String(!list));
+      listBtn.setAttribute("aria-pressed", String(list));
+    }
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy]");
+      if (!button) return;
+      await navigator.clipboard.writeText(button.dataset.copy);
+      const oldText = button.textContent;
+      button.textContent = "已複製";
+      setTimeout(() => { button.textContent = oldText; }, 1200);
+    });
+
+    gridBtn.addEventListener("click", () => setView("grid"));
+    listBtn.addEventListener("click", () => setView("list"));
+
+    document.querySelector("#totalCount").textContent = submissions.length;
+    document.querySelector("#liveCount").textContent = submissions.filter(isPublicUrl).length;
+    render();
+  </script>
+</body>
+</html>
